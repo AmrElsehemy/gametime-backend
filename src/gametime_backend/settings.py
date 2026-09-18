@@ -12,8 +12,9 @@ class Settings:
 
     @classmethod
     def from_environment(cls) -> "Settings":
+        defaults = cls()
         return cls(
-            service_name=os.getenv("GAMETIME_SERVICE_NAME", cls.service_name),
-            environment=os.getenv("GAMETIME_ENVIRONMENT", cls.environment),
-            version=os.getenv("GAMETIME_VERSION", cls.version),
+            service_name=os.getenv("GAMETIME_SERVICE_NAME", defaults.service_name),
+            environment=os.getenv("GAMETIME_ENVIRONMENT", defaults.environment),
+            version=os.getenv("GAMETIME_VERSION", defaults.version),
         )
