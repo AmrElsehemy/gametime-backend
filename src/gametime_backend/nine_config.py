@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from importlib.resources import files
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, HttpUrl, ValidationError
 
@@ -39,6 +39,26 @@ class NineConfigError(RuntimeError):
 SUPPORTED_ENVIRONMENTS = ("development", "staging", "production")
 
 
+def validate_nine_config_payload(
+    payload: dict[str, Any],
+    *,
+    environment: str,
+) -> NineRemoteConfig:
+    try:
+        config = NineRemoteConfig.model_validate(payload)
+    except ValidationError as exc:
+        raise NineConfigError(
+            f"Nine config for {environment} failed schema validation: {exc}"
+        ) from exc
+
+    if len(config.disabled_level_ids) != len(set(config.disabled_level_ids)):
+        raise NineConfigError(
+            f"Nine config for {environment} contains duplicate disabled level IDs"
+        )
+
+    return config
+
+
 def _resource_for(environment: str):
     if environment not in SUPPORTED_ENVIRONMENTS:
         raise NineConfigError(f"Unsupported Game Time environment: {environment}")
@@ -61,19 +81,7 @@ def load_nine_config(environment: str) -> NineRemoteConfig:
             f"Nine config for {environment} could not be loaded: {exc}"
         ) from exc
 
-    try:
-        config = NineRemoteConfig.model_validate(payload)
-    except ValidationError as exc:
-        raise NineConfigError(
-            f"Nine config for {environment} failed schema validation: {exc}"
-        ) from exc
-
-    if len(config.disabled_level_ids) != len(set(config.disabled_level_ids)):
-        raise NineConfigError(
-            f"Nine config for {environment} contains duplicate disabled level IDs"
-        )
-
-    return config
+    return validate_nine_config_payload(payload, environment=environment)
 
 
 def validate_all_nine_configs() -> dict[str, NineRemoteConfig]:
