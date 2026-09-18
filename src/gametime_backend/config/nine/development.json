@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "config_version": "2026-09-18.dev.1",
+  "minimum_client_config_version": 1,
+  "rewarded_ads_enabled": false,
+  "rewarded_hint_enabled": true,
+  "bonus_reward_enabled": true,
+  "disabled_level_ids": [],
+  "support_url": null,
+  "daily_challenge": null
+}
