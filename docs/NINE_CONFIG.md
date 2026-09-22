@@ -1,6 +1,8 @@
-# Nine Remote Config Contract
+# Exactly One Remote Config Contract
 
-Nine remains an **offline-first game**. This endpoint can change operational behavior, but it can never become a prerequisite for launching, playing, saving progress, completing bundled levels, or finishing the onboarding flow.
+Exactly One remains an **offline-first game**. This endpoint can change operational behavior, but it can never become a prerequisite for launching, playing, saving progress, completing bundled levels, or finishing the onboarding flow.
+
+Public product name: **Exactly One**. The internal codename, API route, configuration paths, and model identifiers retain `nine` for compatibility. Never use that codename as player-facing product copy.
 
 ## Endpoint
 
@@ -57,7 +59,7 @@ Clients should send `If-None-Match` on refresh. Matching versions return `304 No
 
 ## iOS fallback contract
 
-Nine must bundle safe defaults in the app. Client resolution order is:
+Exactly One must bundle safe defaults in the app. Client resolution order is:
 
 1. launch immediately with bundled defaults
 2. read the last known-good cached remote config if its schema is supported
