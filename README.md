@@ -18,7 +18,7 @@ This is **not** a gameplay server and games must not depend on it to launch or p
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-uvicorn gametime_backend.main:app --reload
+GAMETIME_ENVIRONMENT=development uvicorn gametime_backend.main:app --reload
 ```
 
 Health check:
@@ -49,7 +49,7 @@ pytest
 Bootstrap configuration is environment-driven:
 
 - `GAMETIME_SERVICE_NAME`
-- `GAMETIME_ENVIRONMENT`
+- `GAMETIME_ENVIRONMENT` — `development`, `staging` or `production`. **Unset means `production`** (rewards off, API docs and schema hidden). Set `GAMETIME_ENVIRONMENT=development` for local runs. Any other value stops the service at startup.
 - `GAMETIME_VERSION`
 
 Secrets must never be committed. `.env` files are ignored.

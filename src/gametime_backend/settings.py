@@ -7,7 +7,8 @@ from dataclasses import dataclass
 @dataclass(frozen=True, slots=True)
 class Settings:
     service_name: str = "gametime-backend"
-    environment: str = "development"
+    # Unset means production: the fail-closed config, with docs hidden.
+    environment: str = "production"
     version: str = "0.1.0"
 
     @classmethod
