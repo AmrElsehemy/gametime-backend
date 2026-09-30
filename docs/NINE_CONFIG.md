@@ -41,7 +41,7 @@ No field contains executable gameplay code and no player identity is required.
 
 ## Publishing rule
 
-Configuration is checked into source and validated by `NineRemoteConfig` before the app can serve it. All supported environment files are loaded during application startup/import. Invalid schema, malformed JSON, duplicate disabled-level IDs, or an unsupported schema version causes validation to fail instead of silently serving a bad document.
+Configuration is checked into source and validated by `NineRemoteConfig` before the app can serve it. At startup the service loads only its own environment's file; an invalid file or an unknown environment stops startup rather than serving errors. CI validates every environment file. Invalid schema, unknown or misspelled keys, malformed JSON, duplicate disabled-level IDs, or an unsupported schema version causes validation to fail instead of silently serving a bad document.
 
 Production starts with reward features **off**. They are enabled only after the corresponding iOS feature and policy/privacy work are production-ready.
 

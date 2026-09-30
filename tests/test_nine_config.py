@@ -88,3 +88,29 @@ def test_unknown_schema_version_is_rejected() -> None:
 def test_unknown_environment_is_not_silently_mapped() -> None:
     with pytest.raises(NineConfigError, match="Unsupported Game Time environment"):
         load_nine_config("mystery")
+
+
+def test_misspelled_kill_switch_key_is_rejected() -> None:
+    payload = {
+        "schema_version": 1,
+        "config_version": "test.1",
+        "disabled_level_id": ["v1-041"],
+    }
+
+    with pytest.raises(NineConfigError, match="failed schema validation"):
+        validate_nine_config_payload(payload, environment="test")
+
+
+def test_unknown_daily_challenge_key_is_rejected() -> None:
+    payload = {
+        "schema_version": 1,
+        "config_version": "test.1",
+        "daily_challenge": {
+            "level_id": "v1-006",
+            "challenge_version": "1",
+            "levelid": "v1-007",
+        },
+    }
+
+    with pytest.raises(NineConfigError, match="failed schema validation"):
+        validate_nine_config_payload(payload, environment="test")

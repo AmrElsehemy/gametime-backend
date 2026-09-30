@@ -5,15 +5,20 @@ import json
 from importlib.resources import files
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, HttpUrl, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
 
 
 class DailyChallengeOverride(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     level_id: str
     challenge_version: str
 
 
 class NineRemoteConfig(BaseModel):
+    # A misspelled kill-switch key must fail validation, not fall back to a default.
+    model_config = ConfigDict(extra="forbid")
+
     schema_version: Literal[1] = 1
     config_version: str = Field(min_length=1)
     minimum_client_config_version: int = Field(default=1, ge=1)
