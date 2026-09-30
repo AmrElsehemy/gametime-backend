@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gametime_backend.main import app, create_app
-from gametime_backend.nine_config import NineConfigError
+from gametime_backend.exactly_one_config import ExactlyOneConfigError
 from gametime_backend.settings import Settings
 
 
@@ -42,7 +42,7 @@ def test_production_app_hides_schema_and_serves_fail_closed_config() -> None:
     assert client.get("/openapi.json").status_code == 404
     assert client.get("/docs").status_code == 404
 
-    config = client.get("/v1/games/nine/config").json()
+    config = client.get("/v1/games/exactly-one/config").json()
     assert config["config_version"] == "2026-09-18.production.1"
     assert config["rewarded_ads_enabled"] is False
 
@@ -54,5 +54,5 @@ def test_non_production_app_keeps_schema_for_development() -> None:
 
 
 def test_unknown_environment_refuses_to_start() -> None:
-    with pytest.raises(NineConfigError, match="Unsupported Game Time environment"):
+    with pytest.raises(ExactlyOneConfigError, match="Unsupported Game Time environment"):
         create_app(Settings(environment="prod"))

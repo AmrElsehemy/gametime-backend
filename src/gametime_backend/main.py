@@ -3,7 +3,7 @@ from typing import Literal
 from fastapi import FastAPI, Request, Response, status
 from pydantic import BaseModel
 
-from .nine_config import NineRemoteConfig, load_nine_config
+from .exactly_one_config import ExactlyOneRemoteConfig, load_exactly_one_config
 from .settings import Settings
 
 
@@ -18,7 +18,7 @@ def create_app(settings: Settings) -> FastAPI:
     # Loads only this environment's config: an unknown environment or an
     # invalid file stops startup instead of serving 503s behind a green
     # /health, and a broken staging file cannot take production down.
-    nine_config = load_nine_config(settings.environment)
+    exactly_one_config = load_exactly_one_config(settings.environment)
     is_production = settings.environment == "production"
 
     app = FastAPI(
@@ -38,12 +38,12 @@ def create_app(settings: Settings) -> FastAPI:
         )
 
     @app.get(
-        "/v1/games/nine/config",
-        response_model=NineRemoteConfig,
+        "/v1/games/exactly-one/config",
+        response_model=ExactlyOneRemoteConfig,
         tags=["games"],
     )
-    def nine_config_endpoint(request: Request, response: Response):
-        etag = nine_config.etag()
+    def exactly_one_config_endpoint(request: Request, response: Response):
+        etag = exactly_one_config.etag()
         cache_control = "public, max-age=300, stale-if-error=86400"
 
         if request.headers.get("if-none-match") == etag:
@@ -57,8 +57,8 @@ def create_app(settings: Settings) -> FastAPI:
 
         response.headers["ETag"] = etag
         response.headers["Cache-Control"] = cache_control
-        response.headers["X-GameTime-Config-Version"] = nine_config.config_version
-        return nine_config
+        response.headers["X-GameTime-Config-Version"] = exactly_one_config.config_version
+        return exactly_one_config
 
     return app
 
