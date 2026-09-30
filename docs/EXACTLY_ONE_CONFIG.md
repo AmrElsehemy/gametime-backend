@@ -2,12 +2,12 @@
 
 Exactly One remains an **offline-first game**. This endpoint can change operational behavior, but it can never become a prerequisite for launching, playing, saving progress, completing bundled levels, or finishing the onboarding flow.
 
-Public product name: **Exactly One**. The internal codename, API route, configuration paths, and model identifiers retain `nine` for compatibility. Never use that codename as player-facing product copy.
+The route, configuration paths and model names use Exactly One (`exactly-one`, `ExactlyOneRemoteConfig`). The former codename `nine` is retired; the app never called the old `/v1/games/nine/config` route, so it was renamed without a compatibility alias.
 
 ## Endpoint
 
 ```http
-GET /v1/games/nine/config
+GET /v1/games/exactly-one/config
 ```
 
 The service selects the checked-in config for its own `GAMETIME_ENVIRONMENT` (`development`, `staging`, or `production`). Clients do not select an environment through the request.
@@ -41,7 +41,7 @@ No field contains executable gameplay code and no player identity is required.
 
 ## Publishing rule
 
-Configuration is checked into source and validated by `NineRemoteConfig` before the app can serve it. At startup the service loads only its own environment's file; an invalid file or an unknown environment stops startup rather than serving errors. CI validates every environment file. Invalid schema, unknown or misspelled keys, malformed JSON, duplicate disabled-level IDs, or an unsupported schema version causes validation to fail instead of silently serving a bad document.
+Configuration is checked into source and validated by `ExactlyOneRemoteConfig` before the app can serve it. At startup the service loads only its own environment's file; an invalid file or an unknown environment stops startup rather than serving errors. CI validates every environment file. Invalid schema, unknown or misspelled keys, malformed JSON, duplicate disabled-level IDs, or an unsupported schema version causes validation to fail instead of silently serving a bad document.
 
 Production starts with reward features **off**. They are enabled only after the corresponding iOS feature and policy/privacy work are production-ready.
 

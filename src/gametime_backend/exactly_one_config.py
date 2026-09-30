@@ -15,7 +15,7 @@ class DailyChallengeOverride(BaseModel):
     challenge_version: str
 
 
-class NineRemoteConfig(BaseModel):
+class ExactlyOneRemoteConfig(BaseModel):
     # A misspelled kill-switch key must fail validation, not fall back to a default.
     model_config = ConfigDict(extra="forbid")
 
@@ -37,28 +37,28 @@ class NineRemoteConfig(BaseModel):
         return f'"{digest}"'
 
 
-class NineConfigError(RuntimeError):
+class ExactlyOneConfigError(RuntimeError):
     pass
 
 
 SUPPORTED_ENVIRONMENTS = ("development", "staging", "production")
 
 
-def validate_nine_config_payload(
+def validate_exactly_one_config_payload(
     payload: dict[str, Any],
     *,
     environment: str,
-) -> NineRemoteConfig:
+) -> ExactlyOneRemoteConfig:
     try:
-        config = NineRemoteConfig.model_validate(payload)
+        config = ExactlyOneRemoteConfig.model_validate(payload)
     except ValidationError as exc:
-        raise NineConfigError(
-            f"Nine config for {environment} failed schema validation: {exc}"
+        raise ExactlyOneConfigError(
+            f"Exactly One config for {environment} failed schema validation: {exc}"
         ) from exc
 
     if len(config.disabled_level_ids) != len(set(config.disabled_level_ids)):
-        raise NineConfigError(
-            f"Nine config for {environment} contains duplicate disabled level IDs"
+        raise ExactlyOneConfigError(
+            f"Exactly One config for {environment} contains duplicate disabled level IDs"
         )
 
     return config
@@ -66,31 +66,31 @@ def validate_nine_config_payload(
 
 def _resource_for(environment: str):
     if environment not in SUPPORTED_ENVIRONMENTS:
-        raise NineConfigError(f"Unsupported Game Time environment: {environment}")
+        raise ExactlyOneConfigError(f"Unsupported Game Time environment: {environment}")
 
     return (
         files("gametime_backend")
         .joinpath("config")
-        .joinpath("nine")
+        .joinpath("exactly-one")
         .joinpath(f"{environment}.json")
     )
 
 
-def load_nine_config(environment: str) -> NineRemoteConfig:
+def load_exactly_one_config(environment: str) -> ExactlyOneRemoteConfig:
     resource = _resource_for(environment)
 
     try:
         payload = json.loads(resource.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError) as exc:
-        raise NineConfigError(
-            f"Nine config for {environment} could not be loaded: {exc}"
+        raise ExactlyOneConfigError(
+            f"Exactly One config for {environment} could not be loaded: {exc}"
         ) from exc
 
-    return validate_nine_config_payload(payload, environment=environment)
+    return validate_exactly_one_config_payload(payload, environment=environment)
 
 
-def validate_all_nine_configs() -> dict[str, NineRemoteConfig]:
+def validate_all_exactly_one_configs() -> dict[str, ExactlyOneRemoteConfig]:
     return {
-        environment: load_nine_config(environment)
+        environment: load_exactly_one_config(environment)
         for environment in SUPPORTED_ENVIRONMENTS
     }
